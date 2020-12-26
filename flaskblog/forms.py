@@ -17,7 +17,7 @@ class RegisterForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Register')
 
-    def validate_username(self, username):
+    def validate_username(self, username): # Check if username exists
         user = User.query.filter_by(username=username.data).first()
         if user:
             raise ValidationError('Username is taken. Please choose another one.')
@@ -39,8 +39,8 @@ class UpdateProfileForm(FlaskForm):
         validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Update')
 
-    def validate_username(self, username):
-        if username.data != current_user.username:
+    def validate_username(self, username): # Check if username exists
+        if username.data != current_user.username: # If given username is different
             user = User.query.filter_by(username=username.data).first()
             if user:
                 raise ValidationError('Username is taken. Please choose another one.')
