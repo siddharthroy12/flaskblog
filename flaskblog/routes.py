@@ -5,7 +5,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog import app, db, bcrypt, email_server
 from flaskblog.forms import (
     RegisterForm, LoginForm, UpdateProfileForm,
-    PostForm, PasswordResetForm
+    PostForm, PasswordResetForm, ForgotPasswordResetForm
 )
 from flaskblog.models import Post, User
 from itsdangerous import TimedJSONWebSignatureSerializer
@@ -184,13 +184,9 @@ def reset_password(token):
         else:
             abort(401)
     else:
-        s = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'])
-        try:
-            id = s.loads(token)['id']
-        except:
+        user = User.verify_reset_token(token)
+        if not user:
             abort(401)
-    
-        user = User.query.get(id)
     
     form = PasswordResetForm()
 
@@ -208,7 +204,7 @@ def request_password_reset():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     
-    form = RequestPasswordResetForm()
+    form = ForgotPasswordResetForm()
 
     if form.validate_on_submit():
         s = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'], 3600)
