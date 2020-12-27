@@ -1,3 +1,4 @@
+import os, dotenv
 from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -6,8 +7,11 @@ from flask_login import LoginManager
 
 app = Flask(__name__)
 
+# Load .env file
+dotenv.load_dotenv()
+
 # Configurations
-app.config['SECRET_KEY'] = '8269ce5e81803447f884141f3057985ff4f58032687d16463a35790ee1528728'
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
 # Database instance
