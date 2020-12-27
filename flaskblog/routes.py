@@ -1,5 +1,4 @@
 import secrets, os, requests
-from PIL import Image
 from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog import app, db, bcrypt, email_server
@@ -85,8 +84,6 @@ def save_picture(form_picture):
 def profile():
     # Show profile page and update on POST request
     form = UpdateProfileForm()
-    # Get the image path for current user
-    image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     if form.validate_on_submit(): # Update Profile
         if form.picture.data: # If new profile picture is given then update to it
             current_user.image_file = save_picture(form.picture.data)
@@ -98,7 +95,7 @@ def profile():
     elif request.method == "GET": # Display Profile detail
         form.username.data = current_user.username
         form.email.data = current_user.email
-    return render_template('profile.html', image_file=image_file, form=form)
+    return render_template('profile.html', form=form)
 
 @app.route("/user/<string:username>")
 def user(username):
