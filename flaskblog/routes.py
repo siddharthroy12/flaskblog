@@ -2,14 +2,18 @@ import secrets, os, requests
 from PIL import Image
 from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import login_user, current_user, logout_user, login_required
-from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegisterForm, LoginForm, UpdateProfileForm, PostForm
+from flaskblog import app, db, bcrypt, email_server
+from flaskblog.forms import (
+    RegisterForm, LoginForm, UpdateProfileForm,
+    PostForm, PasswordResetForm
+)
 from flaskblog.models import Post, User
+from itsdangerous import TimedJSONWebSignatureSerializer
 
 @app.route("/")
 def home():
-    # Get all posts and render it
-    posts = Post.query.all()
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
     return render_template('home.html', posts=posts)
 
 @app.route("/about")
@@ -96,6 +100,16 @@ def profile():
         form.email.data = current_user.email
     return render_template('profile.html', image_file=image_file, form=form)
 
+@app.route("/user/<string:username>")
+def user(username):
+    page = request.args.get('page', 1, type=int)
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = Post.query\
+        .filter_by(author=user)\
+        .order_by(Post.date_posted.desc())\
+        .paginate(page=page, per_page=5)
+    return render_template('user.html', posts=posts, user=user)
+
 @app.route("/logout")
 @login_required
 def logout():
@@ -160,3 +174,63 @@ def delete_post(id):
     db.session.commit()
     flash('Your post has been deleted', 'success')
     return redirect(url_for('home'))
+
+@app.route("/resetpassword/<string:token>", methods=['GET', 'POST'])
+def reset_password(token):
+    user = None
+    if token == "self":
+        if current_user.is_authenticated:
+            user = current_user
+        else:
+            abort(401)
+    else:
+        s = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'])
+        try:
+            id = s.loads(token)['id']
+        except:
+            abort(401)
+    
+        user = User.query.get(id)
+    
+    form = PasswordResetForm()
+
+    if form.validate_on_submit():
+        # Hash the password create a user and login
+        hashed_pw = bcrypt.generate_password_hash(form.new_password.data, rounds=10)
+        user.password = hashed_pw
+        db.session.commit()
+        flash('Password reset successfull!', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_password.html', form=form)
+
+@app.route("/forgotpassword", methods=['GET', 'POST'])
+def request_password_reset():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    
+    form = RequestPasswordResetForm()
+
+    if form.validate_on_submit():
+        s = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'], 3600)
+        user = User.query.filter_by(email=form.email.data).first()
+        token = s.dumps({"id": user.id}).decode('utf-8')
+        reset_link = request.url_root[:-1] + url_for('reset_password', token=token)
+
+        message = f"""\
+        From: {os.environ['EMAIL']}
+        To: {form.email.data}
+        Subject: Reset Your Password
+
+
+        Hi {user.username}!
+        You can reset your password at {reset_link}
+
+        This link will expire in 1 hour.
+        If you haven't requested password reset then you can ignore this mail and don't share this link with anyone
+        """
+
+        email_server.sendmail(os.environ['EMAIL'], form.email.data, message)
+        
+        flash('Reset link sent to your email', 'success')
+
+    return render_template('request_password_reset.html', form=form)

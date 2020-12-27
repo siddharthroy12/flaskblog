@@ -1,4 +1,4 @@
-import os, dotenv
+import os, dotenv, smtplib, ssl
 from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -24,6 +24,14 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
+
+port = 465  # For SSL
+password = os.environ['EMAIL_PASSWORD']
+        
+# Create a secure SSL context
+context = ssl.create_default_context()
+email_server = smtplib.SMTP_SSL("smtp.gmail.com", port, context=context)
+email_server.login(os.environ['EMAIL'], password)
 
 # Routes
 from flaskblog import routes
