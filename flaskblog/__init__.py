@@ -22,7 +22,7 @@ bcrypt = Bcrypt(app)
 
 # Login manager
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
 
 port = 465  # For SSL
@@ -34,4 +34,11 @@ email_server = smtplib.SMTP_SSL("smtp.gmail.com", port, context=context)
 email_server.login(os.environ['EMAIL'], password)
 
 # Routes
-from flaskblog import routes
+from flaskblog.users.routes import users
+app.register_blueprint(users)
+from flaskblog.posts.routes import posts
+app.register_blueprint(posts)
+from flaskblog.main.routes import main
+app.register_blueprint(main)
+from flaskblog.errors.handlers import errors
+app.register_blueprint(errors)

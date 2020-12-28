@@ -7,7 +7,7 @@
             <h2 class="account-heading">{{ current_user.username }}</h2>
             <p class="text-secondary">{{ current_user.email }}</p>
             <div>
-                <a class="btn btn-secondary btn-sm mt-2 mb-2" href="{{url_for('reset_password', token='self')}}">Change Password</a>
+                <a class="btn btn-secondary btn-sm mt-2 mb-2" href="{{url_for('users.reset_password', token='self')}}">Change Password</a>
             </div>
         </div>
         </div>
