@@ -2,6 +2,7 @@ import os, dotenv, smtplib, ssl
 from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_heroku import Heroku
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 
@@ -12,8 +13,14 @@ dotenv.load_dotenv()
 
 # Configurations
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
+# Heroku postgres for production and sqlite for development
+if os.environ['ENV'] == "production":
+    heroku = Heroku(app)
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Database instance
 db = SQLAlchemy(app)
 
