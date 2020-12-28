@@ -2,7 +2,7 @@ import os, dotenv, smtplib, ssl
 from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_heroku import Heroku
+from flask.ext.heroku import Heroku
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 
