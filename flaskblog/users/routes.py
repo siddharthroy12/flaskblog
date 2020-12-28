@@ -27,7 +27,7 @@ def register():
         new_user = User(
             username=form.username.data,
             email=form.email.data,
-            password=hashed_pw,
+            password=hashed_pw.decode('utf-8'),
         )
         db.session.add(new_user)
         db.session.commit()
