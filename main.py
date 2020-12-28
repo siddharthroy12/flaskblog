@@ -2,7 +2,7 @@ import os
 from flaskblog import app
 
 if __name__ == "__main__":
-    if os.environ['ENV'] == "production":
+    if os.environ.get('ENV') == "production":
         app.run()
     else:
         app.run(debug=True)

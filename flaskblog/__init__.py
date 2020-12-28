@@ -15,7 +15,7 @@ dotenv.load_dotenv()
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 
 # Heroku postgres for production and sqlite for development
-if os.environ['ENV'] == "production":
+if os.environ.get('ENV') == "production":
     heroku = Heroku(app)
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
