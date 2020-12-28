@@ -13,11 +13,11 @@ dotenv.load_dotenv()
 # Configurations
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 
-# Heroku postgres for production and sqlite for development
+# Heroku postgres for production
 if os.environ.get('ENV') == "production":
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///demo'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
