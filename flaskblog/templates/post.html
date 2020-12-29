@@ -10,16 +10,16 @@
                     <div>
                         <a class="btn btn-secondary btn-sm mt-2 mb-2" href="{{ url_for('posts.update_post', id=post.id) }}">Update</a>
                         <button type="button" class="btn btn-danger btn-sm mt-2 mb-2" data-toggle="modal" data-target="#confirmModal">Delete</button>
-                        <form action="{{ url_for('posts.like_post', id=post.id) }}" method="POST">
-                            {% if liked %}
-                                <input class="btn btn-danger btn-sm mt-2 mb-2" type="submit" value="Unlike">
-                            {% else %}
-                                <input class="btn btn-primary btn-sm mt-2 mb-2" type="submit" value="Like">
-                            {% endif %}
-                        </form>
-                        <p>Likes: {{likes}}</p>
                     </div>
                 {% endif %}
+                <form action="{{ url_for('posts.like_post', id=post.id) }}" method="POST">
+                    {% if liked %}
+                        <input class="btn btn-danger btn-sm mt-2 mb-2" type="submit" value="Unlike">
+                    {% else %}
+                        <input class="btn btn-primary btn-sm mt-2 mb-2" type="submit" value="Like">
+                    {% endif %}
+                </form>
+                <p>Likes: {{likes}}</p>
             </div>
             <h2 class="article-title">{{ post.title }}</h2>
             <div class="cke_editable cke_editable_themed cke_contents_ltr cke_show_borders">
