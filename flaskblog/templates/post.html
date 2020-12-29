@@ -10,13 +10,73 @@
                     <div>
                         <a class="btn btn-secondary btn-sm mt-2 mb-2" href="{{ url_for('posts.update_post', id=post.id) }}">Update</a>
                         <button type="button" class="btn btn-danger btn-sm mt-2 mb-2" data-toggle="modal" data-target="#confirmModal">Delete</button>
+                        <form action="{{ url_for('posts.like_post', id=post.id) }}" method="POST">
+                            {% if liked %}
+                                <input class="btn btn-danger btn-sm mt-2 mb-2" type="submit" value="Unlike">
+                            {% else %}
+                                <input class="btn btn-primary btn-sm mt-2 mb-2" type="submit" value="Like">
+                            {% endif %}
+                        </form>
+                        <p>Likes: {{likes}}</p>
                     </div>
                 {% endif %}
             </div>
             <h2 class="article-title">{{ post.title }}</h2>
-            <p class="article-content">{{ post.content }}</p>
+            <div class="cke_editable cke_editable_themed cke_contents_ltr cke_show_borders">
+                {{ post.content | safe }}
+            </div>
         </div>
     </article>
+    <form method="POST" action="" novalidate>
+        {{ comment_form.hidden_tag() }}
+        <fieldset class="from-group">
+            <legend class="border-bottom mb-4">Comment</legend>
+            
+            <div class="form-group">
+                {{ comment_form.content.label(class="form-control-label") }}
+
+                {% if comment_form.content.errors %}
+                    {{ comment_form.content(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in comment_form.content.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ comment_form.content(class="form-control from-control-lg") }}
+                {% endif %}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ comment_form.submit(class="btn btn-outline-info")}}
+        </div>
+    </form>
+    {% if post.comments == [] %}
+        <p>No comments</p>
+    {% else %}
+        {% for comment in post.comments %}
+            <article class="media content-section">
+                <img class="rounded-circle article-img" src="{{ comment.author.image_file }}" >
+                <div class="media-body">
+                    <div class="article-metadata">
+                    <a class="mr-2" href="{{ url_for('users.user', username=comment.author.username )}}">{{ comment.author.username }}</a>
+                    <small class="text-muted">{{ comment.date_posted.strftime('%Y-%m-%d') }}</small>
+                        {% if comment.author == current_user %}
+                            <div>
+                                <form action="{{ url_for('posts.delete_comment', id=comment.id) }}" method="POST">
+                                    <input class="btn btn-danger btn-sm mt-2 mb-2" type="submit" value="Delete">
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {{ comment.body }}
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% endif %}
+    
     <!-- Modal -->
     <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">

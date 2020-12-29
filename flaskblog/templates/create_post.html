@@ -27,14 +27,14 @@
             <div class="form-group">
                 {{ form.content.label(class="form-control-label") }}
                 {% if form.content.errors %}
-                    {{ form.content(class="form-control form-control-lg is-invalid") }}
+                    {{ form.content(class="form-control form-control-lg is-invalid") | safe }}
                     <div class="invalid-feedback">
                         {% for error in form.content.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.content(class="form-control from-control-lg") }}
+                    {{ form.content(class="form-control from-control-lg") | safe}}
                 {% endif %}
             </div>
         </fieldset>
@@ -43,4 +43,5 @@
         </div>
     </form>
 </div>
+{{ ckeditor.config(name='content') }}
 {% endblock content %}

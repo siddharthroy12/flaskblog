@@ -4,6 +4,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from flask_ckeditor import CKEditor
 
 app = Flask(__name__)
 
@@ -12,6 +13,9 @@ dotenv.load_dotenv()
 
 # Configurations
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
+
+# Ckeditor
+ckeditor = CKEditor(app)
 
 # Heroku postgres for production
 if os.environ.get('ENV') == "production":
