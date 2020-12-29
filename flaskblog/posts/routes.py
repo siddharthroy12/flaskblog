@@ -102,8 +102,10 @@ def like_post(id):
 @login_required
 def delete_post(id):
     post = Post.query.get(id)
+
     if not post:
         abort(404)
+    
     if current_user.is_admin != 'True':
         if post.author != current_user:
             abort(403)
