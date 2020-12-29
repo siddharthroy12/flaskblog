@@ -56,10 +56,14 @@ def post(id):
 @login_required
 def update_post(id):
     post = Post.query.get(id)
+
     if not post:
         abort(404)
-    if post.author != current_user:
-        abort(403)
+    
+    if current_user.is_admin != 'True':
+        if post.author != current_user:
+            abort(403)
+    
     form = PostForm()
     if form.validate_on_submit():
         post.title = form.title.data

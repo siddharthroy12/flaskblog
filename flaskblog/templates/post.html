@@ -6,7 +6,7 @@
             <div class="article-metadata">
             <a class="mr-2" href="{{ url_for('users.user', username=post.author.username )}}">{{ post.author.username }}</a>
             <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
-                {% if post.author == current_user %}
+                {% if post.author == current_user or current_user.is_admin %}
                     <div>
                         <a class="btn btn-secondary btn-sm mt-2 mb-2" href="{{ url_for('posts.update_post', id=post.id) }}">Update</a>
                         <button type="button" class="btn btn-danger btn-sm mt-2 mb-2" data-toggle="modal" data-target="#confirmModal">Delete</button>
