@@ -82,3 +82,12 @@ a.article-title:hover {
 .form-check {
   margin-bottom: 10px;
 }
+
+.post-container {
+  max-width: 500px;
+}
+
+.post-container img {
+  width: 100% !important;
+  height: auto !important;
+}
