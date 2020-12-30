@@ -30,10 +30,12 @@ def post(id):
     if not post:
         abort(404)
 
-    liked = Like.query.filter_by(author=current_user, post=post).first()
+    if current_user.is_authenticated:
+        liked = Like.query.filter_by(author=current_user, post=post).first()
+    else:
+        liked= False
+        
     likes = Like.query.filter_by(post=post).count()
-
-    print(likes)
 
     comment_form = CommentForm()
     if comment_form.validate_on_submit():
