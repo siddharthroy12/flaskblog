@@ -34,14 +34,14 @@ def post(id):
         liked = Like.query.filter_by(author=current_user, post=post).first()
     else:
         liked= False
-        
+
     likes = Like.query.filter_by(post=post).count()
 
     comment_form = CommentForm()
     if comment_form.validate_on_submit():
         if not current_user.is_authenticated:
             flash('You need to login to comment.', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('users.login'))
 
         new_comment = Comment(
             body=comment_form.content.data,
